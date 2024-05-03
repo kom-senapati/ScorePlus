@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 
-export default function page({params}) {
+export default function page({ params }) {
   const [value, setValue] = useState("");
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(1);
   const [timeRemaining, setTimeRemaining] = useState(30);
@@ -33,7 +33,9 @@ export default function page({params}) {
   };
 
   const previousQuestion = () => {
-    setCurrentQuestionIndex(currentQuestionIndex - 1);
+    if (currentQuestionIndex > 1) {
+      setCurrentQuestionIndex(currentQuestionIndex - 1);
+    }
   };
 
   // Qusestions timer
@@ -49,36 +51,16 @@ export default function page({params}) {
     }
   }, [timeRemaining]);
 
-
   return (
     <div>
-      <div className="flex flex-col h-full w-full text-white bg-slate-800 p-10">
-        <div className="h-screen p-5">
+      <div className="flex flex-col min-h-screen w-full text-white bg-slate-800 p-10">
+        <div className="p-5">
           <h1 className="text-5xl text-white mb-5 font-semibold">
             {params.id}
           </h1>
 
-          <div className="flex gap-10 text-black py-5 px-10 ">
-            <div className="w-[90rem]">
-              <Input className="w-full" value={value} onChange={handleChange} />
-            </div>
-
-            <div>
-              <Select>
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Theme" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="light">Light</SelectItem>
-                  <SelectItem value="dark">Dark</SelectItem>
-                  <SelectItem value="system">System</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-
-          <div>
-            <Tabs defaultValue="account" className="w-[400px] py-5 px-10">
+          <div className="flex mx-auto">
+            <Tabs defaultValue="content" className="w-[400px] py-5 px-10">
               <TabsList>
                 <TabsTrigger value="content">Content</TabsTrigger>
                 <TabsTrigger value="quiz">Quiz</TabsTrigger>
@@ -117,86 +99,115 @@ export default function page({params}) {
               </TabsContent>
 
               {/* Quiz tab here */}
-              <TabsContent value="quiz" className="flex w-[85vw] gap-10 p-3">
-                <div className="w-[70vw] mt-5">
-                  <div className="flex justify-between font-semibold">
-                    <h1 className="text-2xl font-semibold">
-                    {params.id} Quiz
-                    </h1>
-                    <div className="my-auto">
-                      Timer: <span>{timeRemaining} sec</span>
-                    </div>
+              <TabsContent
+                value="quiz"
+                className="flex flex-col w-[85vw] gap-10 p-3"
+              >
+                <div className="flex gap-10 text-black">
+                  <div className="w-[65vw]">
+                    <Input
+                      className="w-full"
+                      value={value}
+                      onChange={handleChange}
+                    />
                   </div>
 
-                  <div className="m-3 p-5 bg-slate-700 rounded-lg">
-                    <h1>Q{currentQuestionIndex}. Temporary Qusetions </h1>
-
-                    <div className="space-y-3 m-3">
-                      <div className="flex items-center space-x-3">
-                        <Input type="radio" id="terms1" name="options" />
-                        <label
-                          htmlFor="terms1"
-                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                        >
-                          Option 1
-                        </label>
-                      </div>
-                      <div className="flex items-center space-x-3">
-                        <Input type="radio" id="terms2" name="options" />
-                        <label
-                          htmlFor="terms2"
-                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                        >
-                          Option 2
-                        </label>
-                      </div>
-                      <div className="flex items-center space-x-3">
-                        <Input type="radio" id="terms3" name="options" />
-                        <label
-                          htmlFor="terms3"
-                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                        >
-                          Option 3
-                        </label>
-                      </div>
-                      <div className="flex items-center space-x-3">
-                        <Input type="radio" id="terms4" name="options" />
-                        <label
-                          htmlFor="terms4"
-                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                        >
-                          Option 4
-                        </label>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="m-3 flex justify-between">
-                    <div className="space-x-3">
-                      <Button onClick={previousQuestion}>Previous</Button>
-                      <Button onClick={nextQuestion}>Next</Button>
-                    </div>
-
-                    <div>
-                      <Button className="bg-emerald-400 hover:bg-emerald-500">
-                        Submit
-                      </Button>
-                    </div>
+                  <div>
+                    <Select>
+                      <SelectTrigger className="w-[180px]">
+                        <SelectValue placeholder="No of Question's" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="10">10</SelectItem>
+                        <SelectItem value="20">20</SelectItem>
+                        <SelectItem value="30">30</SelectItem>
+                        <SelectItem value="50">50</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
                 </div>
 
-                <div className="grid grid-cols-4 gap-2 max-w-md mx-auto">
-                  {Array.from({ length: 22 }, (_, index) => (
-                    <div
-                      key={index}
-                      onClick={getQuestionNumber}
-                      className="bg-gray-100 text-gray-600 dark:bg-gray-800 hover:bg-emerald-300 hover:text-white rounded-md p-4 flex items-center justify-center"
-                    >
-                      <span className=" dark:text-gray-400 font-medium">
-                        {index + 1}
-                      </span>
+                <div className="flex gap-5 justify-between">
+                  <div className="w-[65vw] p-3">
+                    <div className="flex justify-between font-semibold">
+                      <h1 className="text-2xl font-semibold">
+                        {params.id} Quiz
+                      </h1>
+                      <div className="my-auto">
+                        Timer: <span>{timeRemaining} sec</span>
+                      </div>
                     </div>
-                  ))}
+
+                    <div className="m-3 p-5 bg-slate-700 rounded-lg">
+                      <h1>Q{currentQuestionIndex}. Temporary Qusetions </h1>
+
+                      <div className="space-y-3 m-3">
+                        <div className="flex items-center space-x-3">
+                          <Input type="radio" id="terms1" name="options" />
+                          <label
+                            htmlFor="terms1"
+                            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                          >
+                            Option 1
+                          </label>
+                        </div>
+                        <div className="flex items-center space-x-3">
+                          <Input type="radio" id="terms2" name="options" />
+                          <label
+                            htmlFor="terms2"
+                            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                          >
+                            Option 2
+                          </label>
+                        </div>
+                        <div className="flex items-center space-x-3">
+                          <Input type="radio" id="terms3" name="options" />
+                          <label
+                            htmlFor="terms3"
+                            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                          >
+                            Option 3
+                          </label>
+                        </div>
+                        <div className="flex items-center space-x-3">
+                          <Input type="radio" id="terms4" name="options" />
+                          <label
+                            htmlFor="terms4"
+                            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                          >
+                            Option 4
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="m-3 flex justify-between">
+                      <div className="space-x-3">
+                        <Button onClick={previousQuestion}>Previous</Button>
+                        <Button onClick={nextQuestion}>Next</Button>
+                      </div>
+
+                      <div>
+                        <Button className="bg-emerald-400 hover:bg-emerald-500">
+                          Submit
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-4 gap-2 max-w-md mx-auto">
+                    {Array.from({ length: 22 }, (_, index) => (
+                      <div
+                        key={index}
+                        onClick={getQuestionNumber}
+                        className="bg-gray-100 text-gray-600 dark:bg-gray-800 cursor-pointer hover:bg-emerald-300 hover:text-white rounded-md p-4 flex items-center justify-center"
+                      >
+                        <span className=" dark:text-gray-400 font-medium">
+                          {index + 1}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </TabsContent>
             </Tabs>
