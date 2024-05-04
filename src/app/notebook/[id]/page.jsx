@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
+import { marked } from 'marked'; // This is the usual syntax for importing a default export
 import {
   Select,
   SelectContent,
@@ -10,11 +11,61 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 export default function page({ params }) {
   const [value, setValue] = useState("");
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(1);
   const [timeRemaining, setTimeRemaining] = useState(30);
+  const [questionData, setQuestionData] = useState([]);
+
+  const [message, setMessage] = useState("");
+  const [allMessages, setAllMessages] = useState([]);
+  const [ContentData, setContentData] = useState("");
+
+  // Handling API call of Content
+
+  const genAI = new GoogleGenerativeAI("AIzaSyCZrItOLYMXdXU0Q0krLlrC27QQgG8Q7zk");
+
+  // Function to get Content Data
+  async function getContent() {
+    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+
+    const prompt = message;
+
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    const text = response.text();
+    console.log(text);
+
+    setContentData(marked(text));
+  }
+  async function getQuestions() {
+    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+
+    const prompt = `Generate JSON data for ${message} quiz of 10 questions withot '''json mark in it`;
+
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+
+    const text = await response.text(); // Ensure text is awaited
+    let quizData = JSON.parse(text);
+    setQuestionData(quizData.questions);
+    console.log(quizData.questions);
+  }
+
+
+
+
+  // TO render markdown content
+  const MarkdownRenderer = ({ content }) => {
+    return (
+      <div
+        className="content"
+        dangerouslySetInnerHTML={{ __html: content }}
+      ></div>
+    );
+  };
 
   const handleChange = (event) => {
     const newValue = event.target.value;
@@ -46,7 +97,7 @@ export default function page({ params }) {
         setTimeRemaining(timeRemaining - 1);
       }, 1100); // 1000 ms = 1 second
 
-      // Clear the timer when the component unmounts or when time runs out
+      // Clear the timer when the component unmounts or when time getContents out
       return () => clearTimeout(timer);
     }
   }, [timeRemaining]);
@@ -63,38 +114,18 @@ export default function page({ params }) {
             <Tabs defaultValue="content" className="w-[400px] py-5 px-10">
               <TabsList>
                 <TabsTrigger value="content">Content</TabsTrigger>
-                <TabsTrigger value="quiz">Quiz</TabsTrigger>
+                <TabsTrigger onClick={getQuestions} value="quiz">Quiz</TabsTrigger>
               </TabsList>
 
               {/* Content tab here */}
               <TabsContent value="content" className=" w-[70vw] p-3">
                 <div className="space-y-3">
-                  <div>
-                    <h1 className="text-3xl font-bold my-3">
-                      Understanding the Fundamentals
-                    </h1>
-                    <p className="pl-3">
-                      Embark on your journey into the world of web development
-                      by grasping the fundamental concepts. Learn about HTML,
-                      CSS, and JavaScript—the building blocks of the web.
-                      Discover how these languages work together to create
-                      stunning and interactive websites.
-                    </p>
-                  </div>
+                  <MarkdownRenderer content={ContentData} />
+                </div>
 
-                  <div>
-                    <h2 className="text-2xl font-semibold my-3">
-                      Designing for the User Experience
-                    </h2>
-                    <p className="pl-3">
-                      Delve into the art of crafting user-centric designs.
-                      Explore the principles of responsive web design to ensure
-                      seamless accessibility across devices of all sizes. Dive
-                      into user interface (UI) and user experience (UX) design
-                      to create captivating interfaces that engage and delight
-                      visitors.
-                    </p>
-                  </div>
+                <div className="flex flex-row">
+                  <Input value={message} onChange={(e) => { setMessage(e.target.value) }} type="text" id="toggle" className="text-black" />
+                  <Button onClick={getContent}>Send</Button>
                 </div>
               </TabsContent>
 
@@ -141,6 +172,15 @@ export default function page({ params }) {
                     <div className="m-3 p-5 bg-slate-700 rounded-lg">
                       <h1>Q{currentQuestionIndex}. Temporary Qusetions </h1>
 
+                      {
+                        questionData.map((question, index) => {
+                          return (
+                            <div>
+                              <h1>{question.question}</h1>
+                            </div>
+                          );
+                        })
+                      }
                       <div className="space-y-3 m-3">
                         <div className="flex items-center space-x-3">
                           <Input type="radio" id="terms1" name="options" />
