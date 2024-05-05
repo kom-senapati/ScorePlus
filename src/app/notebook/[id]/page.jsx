@@ -25,7 +25,7 @@ export default function page({ params }) {
 
   // Handling API call of Content
 
-  const genAI = new GoogleGenerativeAI("AIzaSyCZrItOLYMXdXU0Q0krLlrC27QQgG8Q7zk");
+  const genAI = new GoogleGenerativeAI(process.env.NEXT_PUBLIC_GEMINI_API_KEY);
 
   // Function to get Content Data
   async function getContent() {
@@ -36,8 +36,6 @@ export default function page({ params }) {
     const result = await model.generateContent(prompt);
     const response = await result.response;
     const text = response.text();
-    console.log(text);
-
     setContentData(marked(text));
   }
   async function getQuestions() {
@@ -53,9 +51,6 @@ export default function page({ params }) {
     setQuestionData(quizData.questions);
     console.log(quizData.questions);
   }
-
-
-
 
   // TO render markdown content
   const MarkdownRenderer = ({ content }) => {
@@ -173,7 +168,7 @@ export default function page({ params }) {
                       <h1>Q{currentQuestionIndex}. Temporary Qusetions </h1>
 
                       {
-                        questionData.map((question, index) => {
+                        questionData?.map((question, index) => {
                           return (
                             <div>
                               <h1>{question.question}</h1>
