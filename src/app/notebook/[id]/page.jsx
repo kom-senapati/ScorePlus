@@ -1,26 +1,23 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
-import { marked } from 'marked'; // This is the usual syntax for importing a default export
-import { Comment } from 'react-loader-spinner'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { marked } from "marked"; // This is the usual syntax for importing a default export
+import { Comment } from "react-loader-spinner";
 import { Button } from "@/components/ui/button";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import Quiz from "@/components/ui/quiz";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { IoCopyOutline } from "react-icons/io5";
+import { useToast } from "@/components/ui/use-toast";
 
 export default function page({ params }) {
-
   const [message, setMessage] = useState("");
   const [ContentData, setContentData] = useState("");
   const [reqSend, setReqSend] = useState(false);
+  const { toast } = useToast()
+
+  const contentRef = useRef(null);
 
   // Handling API call of Content
 
@@ -41,13 +38,21 @@ export default function page({ params }) {
     setReqSend(false);
   }
   // TO render markdown content
-  const MarkdownRenderer = ({ content }) => {
+  const MarkdownRenderer = React.forwardRef(({ content }, ref) => {
     return (
       <div
         className="content"
+        ref={ref}
         dangerouslySetInnerHTML={{ __html: content }}
       ></div>
     );
+  });
+  // copy btn handler
+  const copyHandler = () => {
+    if (contentRef.current) {
+      // Safely access innerText if ref is not null
+      navigator.clipboard.writeText(contentRef.current.innerText);
+    }
   };
 
   return (
@@ -71,60 +76,68 @@ export default function page({ params }) {
                         <AvatarFallback>AI</AvatarFallback>
                       </Avatar>
                       <div className="bg-gray-950 p-5 rounded-lg w-fit">
-                        <MarkdownRenderer content={ContentData} />
+                      <Button
+                    onClick={() => {
+                      copyHandler();
+                      toast({
+                        title: "Copied Successfully✅",
+                      });
+                    }}
+                    className="float-end rounded-full h-12 hover:bg-gray-800"
+                  >
+                    <IoCopyOutline size="1.2em" />
+                  </Button>
+                        <MarkdownRenderer ref={contentRef} content={ContentData} />
                       </div>
                     </div>
                   ) : (
-                    <div className="text-center text-white min-w-full">Ask Anything..</div>
+                    <div
+                      
+                      className="text-center text-white min-w-full"
+                    >
+                      Ask Anything...
+                    </div>
                   )}
                 </div>
 
-                <form onSubmit={(e) => {
-                  e.preventDefault();
-                  getContent();
-                }} className="flex justify-around items-center sticky px-4 pb-1 gap-2 w-full">
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    getContent();
+                  }}
+                  className="flex justify-around items-center sticky px-4 pb-1 gap-2 w-full"
+                >
                   <Input
                     value={message}
-                    onChange={(e) => { setMessage(e.target.value); }}
+                    onChange={(e) => {
+                      setMessage(e.target.value);
+                    }}
                     type="text"
                     id="toggle"
                     className="text-black w-full"
                   />
-                  {
-                    reqSend ? (
-                      <Button
-                        type="submit"
-                        disabled
-                        className="py-6"
-                      >
-                        <Comment
-                          visible={true}
-                          ariaLabel="comment-loading"
-                          wrapperStyle={{}}
-                          wrapperClass="comment-wrapper"
-                          backgroundColor="transparent"
-                          color="white"
-                        />
-                      </Button>
-                    ) : (
-                      <Button
-                        type="submit"
-                        className="py-6"
-                      >
-                        Ask the topic
-                      </Button>
-                    )
-                  }
+                  {reqSend ? (
+                    <Button type="submit" disabled className="py-6">
+                      <Comment
+                        visible={true}
+                        ariaLabel="comment-loading"
+                        wrapperStyle={{}}
+                        wrapperClass="comment-wrapper"
+                        backgroundColor="transparent"
+                        color="white"
+                      />
+                    </Button>
+                  ) : (
+                    <Button type="submit" className="py-6">
+                      Ask the topic
+                    </Button>
+                  )}
                 </form>
               </div>
             </TabsContent>
 
-
             {/* Quiz tab here */}
-            <TabsContent
-              value="quiz"
-              className="flex flex-col gap-10 p-3"
-            >
+            <TabsContent value="quiz" className="flex flex-col gap-10 p-3">
               <Quiz message={message} />
             </TabsContent>
           </Tabs>
