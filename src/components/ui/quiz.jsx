@@ -44,8 +44,10 @@ function Quiz(message) {
 
   // fetch questions from API
   useEffect(() => {
-    getQuestions();
-    console.log(message.message);
+    if (message.message.length > 1) {
+      getQuestions();
+      console.log(message.message);
+    }
   }, [message]);
 
   // Handle option change
@@ -204,7 +206,7 @@ function Quiz(message) {
                       className=" text-lg font-semibold rounded-lg bg-emerald-400 hover:bg-emerald-500 text-white px-4 p-2"
                       disabled={currentQuestionIndex !== questionData.length}
                     >
-                      Submit
+                      View Result
                     </AlertDialogTrigger>
                     <AlertDialogContent>
                       <AlertDialogHeader>
@@ -259,7 +261,11 @@ function Quiz(message) {
               </div>
             </div>
           ) : (
-            <h1 className="text-center"> Loading... </h1>
+            message.message.length > 1 ? (
+              <h1 className="text-center">loading..</h1>
+            ) : (
+              <h1 className="text-center"> Provide some Message</h1>
+            )
           )}
         </div>
       </div>

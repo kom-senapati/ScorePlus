@@ -69,30 +69,45 @@ export default function page({ params }) {
             <TabsContent value="content" className="w-full">
               <div className="border-2 border-white rounded-xl">
                 <div className="h-[65vh] md:min-w-[91vw] m-3 overflow-y-scroll no-scrollbar">
-                  {ContentData ? (
-                    <div className="flex gap-3 w-full">
-                      <Avatar className="sticky top-0 left-0 z-10">
-                        <AvatarImage src="https://github.com/shadcn.png" />
-                        <AvatarFallback>AI</AvatarFallback>
-                      </Avatar>
-                      <div className="bg-gray-950 p-5 rounded-lg w-fit">
-                      <Button
-                    onClick={() => {
-                      copyHandler();
-                      toast({
-                        title: "Copied Successfully✅",
-                      });
-                    }}
-                    className="float-end rounded-full h-12 hover:bg-gray-800"
-                  >
-                    <IoCopyOutline size="1.2em" />
-                  </Button>
-                        <MarkdownRenderer ref={contentRef} content={ContentData} />
+                  {ContentData && message ? (
+                    <>
+                      <div id="user-message" className="my-3">
+                        <div className="flex justify-end gap-3 w-full">
+                          <div className="bg-green-700 p-5 rounded-lg w-fit">
+                            <p>{message}</p>
+                          </div>
+                          <Avatar className="text-black sticky top-3 left-0 z-10">
+                            {/* <AvatarImage src="" /> */}
+                            <AvatarFallback>User</AvatarFallback>
+                          </Avatar>
+                        </div>
                       </div>
-                    </div>
+
+                      <div id="ai-res" className="flex gap-3 w-full">
+                        <Avatar className="text-black sticky top-3 left-0 z-10">
+                          {/* <AvatarImage src="https://github.com/shadcn.png" /> */}
+                          <AvatarFallback>AI</AvatarFallback>
+                        </Avatar>
+                        <div className="bg-gray-950 p-5 rounded-lg w-fit">
+                          <Button
+                            onClick={() => {
+                              copyHandler();
+                              toast({
+                                title: "Copied Successfully✅",
+                              });
+                            }}
+                            className="float-end rounded-full h-12 hover:bg-gray-800"
+                          >
+                            <IoCopyOutline size="1.2em" />
+                          </Button>
+                          <MarkdownRenderer ref={contentRef} content={ContentData} />
+                        </div>
+                      </div>
+                    </>
+
                   ) : (
                     <div
-                      
+
                       className="text-center text-white min-w-full"
                     >
                       Ask Anything...
@@ -103,7 +118,9 @@ export default function page({ params }) {
                 <form
                   onSubmit={(e) => {
                     e.preventDefault();
-                    getContent();
+                    if (message) {
+                      getContent();
+                    }
                   }}
                   className="flex justify-around items-center sticky px-4 pb-1 gap-2 w-full"
                 >
