@@ -49,6 +49,9 @@ const page = () => {
     <div className="flex flex-col h-screen w-full bg-slate-800 p-10 overflow-hidden">
       <div className="flex justify-between items-center mb-5">
         <h1 className="text-3xl text-white">Hi User 👋</h1>
+
+        <p className="text-white font-bold text-3xl">Score<spna className="text-yellow-400 text-4xl">+</spna></p>
+
         <AlertDialog>
           <AlertDialogTrigger
             size="icon"
