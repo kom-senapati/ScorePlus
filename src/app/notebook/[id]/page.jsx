@@ -36,6 +36,7 @@ export default function page({ params }) {
     setContentData(marked(text));
     console.log(response);
     setReqSend(false);
+    setMessage("");
   }
   // TO render markdown content
   const MarkdownRenderer = React.forwardRef(({ content }, ref) => {
@@ -57,7 +58,7 @@ export default function page({ params }) {
 
   return (
     <div>
-      <div className="flex flex-col min-h-screen w-full text-white bg-slate-800">
+      <div className="flex flex-col min-h-screen w-full">
         <div className="flex">
           <Tabs defaultValue="content" className="pt-5 px-10">
             <TabsList>
@@ -67,13 +68,13 @@ export default function page({ params }) {
 
             {/* Content tab here */}
             <TabsContent value="content" className="w-full">
-              <div className="border-2 border-white rounded-xl">
+              <div className="border-2 border-accent rounded-xl">
                 <div className="h-[65vh] md:min-w-[91vw] m-3 overflow-y-scroll no-scrollbar">
                   {ContentData && message ? (
                     <>
                       <div id="user-message" className="my-3">
                         <div className="flex justify-end gap-3 w-full">
-                          <div className="bg-green-700 p-5 rounded-lg w-fit">
+                          <div className="bg-primary p-5 rounded-lg w-fit">
                             <p>{message}</p>
                           </div>
                           <Avatar className="text-black sticky top-3 left-0 z-10">
@@ -131,7 +132,7 @@ export default function page({ params }) {
                     }}
                     type="text"
                     id="toggle"
-                    className="text-black w-full"
+                    className="w-full"
                   />
                   {reqSend ? (
                     <Button type="submit" disabled className="py-6">

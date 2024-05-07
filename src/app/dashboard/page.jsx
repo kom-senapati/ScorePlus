@@ -1,10 +1,7 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -15,11 +12,10 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
+} from "@/components/ui/alert-dialog";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge"
-
-
+import { Badge } from "@/components/ui/badge";
+import { ModeToggle } from "@/components/theme-toggle";
 
 const page = () => {
   function Notebook() {
@@ -31,8 +27,8 @@ const page = () => {
         <CardContent className="">
           <div className="flex justify-between items-center">
             <div>
-              <div className="text-sm text-gray-400">Created on</div>
-              <div className="text-sm text-gray-400">12th July 2021</div>
+              <div className="text-sm">Created on</div>
+              <div className="text-sm">12th July 2021</div>
             </div>
             <Button>View {"->"}</Button>
           </div>
@@ -46,43 +42,54 @@ const page = () => {
     );
   }
   return (
-    <div className="flex flex-col h-screen w-full bg-slate-800 p-10 overflow-hidden">
-      <div className="flex justify-between items-center mb-5">
-        <h1 className="text-3xl text-white">Hi User 👋</h1>
+    <div className="flex flex-col h-screen w-full bg-background overflow-hidden">
+      {/* Header  */}
+      <div className="flex justify-between items-center mb-5 rounded px-12 py-5 bg-secondary text-secondary-foreground">
+        <h1 className="text-3xl">Hi, User! 👋</h1>
 
-        <p className="text-white font-bold text-3xl">Score<spna className="text-yellow-400 text-4xl">+</spna></p>
+        <p className="font-bold text-3xl">
+          Score<span className="text-yellow-400 text-4xl">+</span>
+        </p>
 
-        <AlertDialog>
-          <AlertDialogTrigger
-            size="icon"
-            className=" text-xl rounded-lg bg-slate-900 text-white px-4 p-2"
-          >
-            Create +
-          </AlertDialogTrigger>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Create an Notebook?</AlertDialogTitle>
-              <AlertDialogDescription>
-                <div>
-                  <Input className="w-full" type="text" placeholder="Enter Notbook title or topic.." />
-                </div>
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Revert</AlertDialogCancel>
-              <AlertDialogAction>Save</AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
-      </div>
-      <div className="h-full relative">
-        <div className="h-full grid grid-cols-1 md:grid-cols-4 gap-5 py-10 px-2 overflow-scroll no-scrollbar">
-          {Array(16)
-            .fill(0)
-            .map((_, i) => (
-              <Notebook key={i} />
-            ))}
+        <div className="flex gap-5 items-center">
+          <AlertDialog>
+            <AlertDialogTrigger
+              size="lg"
+              className="text-xl rounded-lg bg-primary text-primary-foreground px-4 p-2"
+            >
+              Create +
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Create an Notebook?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  <div>
+                    <Input
+                      className="w-full"
+                      type="text"
+                      placeholder="Enter Notebook topic.."
+                    />
+                  </div>
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Revert</AlertDialogCancel>
+                <AlertDialogAction>Save</AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+
+          <ModeToggle />
         </div>
+      </div>
+
+      {/* Notebooks */}
+      <div className="h-full grid grid-cols-1 md:grid-cols-4 gap-5 py-10 px-12 overflow-scroll no-scrollbar">
+        {Array(16)
+          .fill(0)
+          .map((_, i) => (
+            <Notebook key={i} />
+          ))}
       </div>
     </div>
   );
