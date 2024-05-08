@@ -15,13 +15,14 @@ export default function SignIn() {
     password: "",
   });
 
-  const onLogin = async () => {
+  const onLogin = async (e) => {
+    e.preventDefault();
     try {
       setLoading(true);
       const response = await axios.post("/api/users/login", user);
       router.push("/dashboard");
     } catch (error) {
-      console.log("Login failed", error.message);
+      console.log("Login failed", error);
     } finally {
       setLoading(false);
     }
@@ -32,12 +33,12 @@ export default function SignIn() {
       <div className="w-full max-w-md space-y-8">
         <div>
           <h2 className="mt-6 text-center text-3xl font-bold tracking-tight text-gray-900 dark:text-gray-50">
-            Sign in for an account
+            Sign in to your account
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600 dark:text-gray-400">
             Or{" "}
             <Link className="font-medium text-primary" href="/sign-up">
-              sign up to your existing account
+              sign up for an account
             </Link>
           </p>
         </div>
@@ -47,7 +48,7 @@ export default function SignIn() {
               className="block text-sm font-medium text-gray-700 dark:text-gray-300"
               htmlFor="username"
             >
-              Username
+              Email
             </Label>
             <div className="mt-1">
               <Input
