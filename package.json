@@ -27,6 +27,7 @@
     "jwt-decode": "^4.0.0",
     "lucide-react": "^0.377.0",
     "marked": "^12.0.2",
+    "mongodb": "^6.6.1",
     "mongoose": "^8.3.4",
     "next": "14.2.3",
     "next-themes": "^0.3.0",
