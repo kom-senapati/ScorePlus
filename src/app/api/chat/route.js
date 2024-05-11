@@ -10,7 +10,7 @@ export async function POST(req) {
     const reqBody = await req.json();
     const { query, response, notebookId } = reqBody;
 
-    const notebook = await Notebook.findById(notebookId);
+    const notebook = await Notebook.find(notebookId);
 
     if (!notebook) {
       return NextResponse.json(

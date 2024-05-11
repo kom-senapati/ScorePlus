@@ -33,6 +33,8 @@ const Dashboard = ({ user }) => {
     }
   };
 
+  console.log(user);
+
   function Notebook() {
     return (
       <Card className="h-[10rem] w-[20rem]">
@@ -60,7 +62,7 @@ const Dashboard = ({ user }) => {
     <div className="flex flex-col h-screen w-full bg-background overflow-hidden">
       {/* Header  */}
       <div className="flex justify-between items-center mb-5 rounded px-12 py-5 bg-secondary text-secondary-foreground">
-        <h1 className="text-3xl">Hi, {user.username}! 👋</h1>
+        <h1 className="text-3xl">Hi, {user?.username}! 👋</h1>
 
         <p className="font-bold text-3xl">
           Score<span className="text-yellow-400 text-4xl">+</span>

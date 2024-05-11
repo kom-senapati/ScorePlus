@@ -37,10 +37,10 @@ export async function POST(req) {
 
 export async function GET(req) {
   try {
-    const reqBody = await req.json();
-    const { userId } = reqBody;
+    const reqBody = req.json();
+    const { user } = reqBody;
 
-    const notebooks = await Notebook.find({ user: userId }).populate("user");
+    const notebooks = await Notebook.find({ user });
 
     return NextResponse.json({
       success: true,
@@ -50,3 +50,4 @@ export async function GET(req) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
+
