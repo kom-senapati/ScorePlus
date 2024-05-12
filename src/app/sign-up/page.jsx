@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
+import { toast } from "@/components/ui/use-toast";
 
 export default function SignUp() {
   const router = useRouter();
@@ -21,8 +22,16 @@ export default function SignUp() {
     try {
       const response = await axios.post("/api/users/signup", user);
       router.push("/sign-in");
+      toast({
+        title: "Acount Created Successfully✅",
+      });
     } catch (error) {
       console.log("Signup failed", error);
+      toast({
+        title: "Error Occured in Account Creation❌",
+        description: error.response.data.message,
+        status: "error",
+      });
     }
   };
 

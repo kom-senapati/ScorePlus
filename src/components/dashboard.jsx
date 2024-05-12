@@ -22,6 +22,7 @@ import { LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { format } from 'timeago.js'
+import { toast } from "./ui/use-toast";
 
 const Dashboard = ({ user }) => {
 
@@ -35,8 +36,16 @@ const Dashboard = ({ user }) => {
     try {
       await axios.get("/api/users/logout");
       router.push("/sign-in");
+      toast({
+        title: "Logout Successfully✅",
+      });
     } catch (error) {
       console.log(error.message);
+      toast({
+        title: "Logout failed❌",
+        description: error.response.data.message,
+        status: "error",
+      });
     }
   };
 
@@ -75,7 +84,7 @@ const Dashboard = ({ user }) => {
       <div className="flex justify-between items-center mb-5 rounded px-12 py-5 bg-secondary text-secondary-foreground">
         <h1 className="text-3xl">Hi, {user?.username}! 👋</h1>
 
-        <p className="font-bold text-3xl">
+        <p className="font-extrabold text-3xl">
           Score<span className="text-yellow-400 text-4xl">+</span>
         </p>
 
@@ -132,11 +141,6 @@ const Dashboard = ({ user }) => {
                     <div className="text-sm">{format(notebook.createdAt)}</div>
                   </div>
                   <Link href={`/notebook/${notebook._id}`}><Button >View {"->"}</Button></Link>
-                </div>
-                <div className="my-2">
-                  <Badge variant="outline">Badge</Badge>
-                  <Badge variant="outline">Badge</Badge>
-                  <Badge variant="outline">Badge</Badge>
                 </div>
               </CardContent>
             </Card>

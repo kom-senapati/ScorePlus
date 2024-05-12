@@ -55,6 +55,10 @@ function Quiz(message) {
     const newSelectedOptions = [...selectedOptions];
     newSelectedOptions[index] = optionLabel;
     setSelectedOptions(newSelectedOptions);
+
+    if(index == questionData.length){
+      setTimeRemaining(0);
+    }
   };
 
   // Score and Quiz Result
@@ -95,7 +99,7 @@ function Quiz(message) {
 
   // Handle Timer
   useEffect(() => {
-    if (timeRemaining === 0) {
+    if (questionData && timeRemaining === 0) {
       if (currentQuestionIndex == questionData.length && timeRemaining === 0) {
         <AlertDialogContent></AlertDialogContent>;
       } else {
@@ -106,16 +110,18 @@ function Quiz(message) {
 
   // Qusestions timer
   useEffect(() => {
-    if (timeRemaining > 0) {
-      // Start a timer to decrement time remaining
-      const timer = setTimeout(() => {
-        setTimeRemaining(timeRemaining - 1);
-      }, 1100); // 1000 ms = 1 second
-
-      // Clear the timer when the component unmounts or when time getContents out
-      return () => clearTimeout(timer);
+    if(questionData){
+      if (timeRemaining > 0 && questionData.length > 0) {
+        // Start a timer to decrement time remaining
+        const timer = setTimeout(() => {
+          setTimeRemaining(timeRemaining - 1);
+        }, 1100); // 1000 ms = 1 second
+  
+        // Clear the timer when the component unmounts or when time getContents out
+        return () => clearTimeout(timer);
+      }
     }
-  }, [timeRemaining]);
+  }, [timeRemaining, questionData]);
 
   // Select specific question
   const getQuestionNumber = (e) => {
@@ -203,7 +209,9 @@ function Quiz(message) {
                     <AlertDialogTrigger
                       size="icon"
                       onClick={showResult}
-                      className=" text-lg font-semibold rounded-lg bg-emerald-400 hover:bg-emerald-500 text-white px-4 p-2"
+                      className={`text-lg font-semibold rounded-lg px-4 p-2  ${
+                        currentQuestionIndex !== questionData.length ? 'bg-gray-300 text-black' : 'bg-emerald-500 text-white'
+                      }`}
                       disabled={currentQuestionIndex !== questionData.length}
                     >
                       View Result
@@ -262,7 +270,7 @@ function Quiz(message) {
             </div>
           ) : (
             message.message.length > 1 ? (
-              <h1 className="text-center">loading..</h1>
+              <h1 className="text-center">loading...</h1>
             ) : (
               <h1 className="text-center"> Provide some Message</h1>
             )

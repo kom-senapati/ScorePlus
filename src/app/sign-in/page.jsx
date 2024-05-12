@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import axios from "axios";
+import { toast } from "@/components/ui/use-toast";
 
 export default function SignIn() {
   const router = useRouter();
@@ -21,8 +22,16 @@ export default function SignIn() {
       setLoading(true);
       const response = await axios.post("/api/users/login", user);
       router.push("/dashboard");
+      toast({
+        title: "Login Successfully✅",
+      });
     } catch (error) {
       console.log("Login failed", error);
+      toast({
+        title: "Login failed❌",
+        description: error.response.data.message,
+        status: "error",
+      });
     } finally {
       setLoading(false);
     }
