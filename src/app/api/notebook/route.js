@@ -38,9 +38,9 @@ export async function POST(req) {
 export async function GET(req) {
   try {
     const reqBody = req.json();
-    const { user } = reqBody;
+    const { userId } = reqBody;
 
-    const notebooks = await Notebook.find({ user });
+    const notebooks = await Notebook.find({ userId }).populate("user");
 
     return NextResponse.json({
       success: true,
