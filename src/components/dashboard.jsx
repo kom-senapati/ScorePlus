@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -19,8 +20,21 @@ import { ModeToggle } from "@/components/theme-toggle";
 import axios from "axios";
 import { LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
+import TimeAgo from 'javascript-time-ago'
+// English.
+import en from 'javascript-time-ago/locale/en'
+
+TimeAgo.addDefaultLocale(en)
+
+// Create formatter (English).
+const timeAgo = new TimeAgo('en-US')
 
 const Dashboard = ({ user }) => {
+
+  const [topic, setTopic] = useState();
+  const [notebooks, setNotebooks] = useState([{}]);
+
   user = JSON.parse(user.value);
   const router = useRouter();
 
@@ -33,31 +47,35 @@ const Dashboard = ({ user }) => {
     }
   };
 
-  console.log(user);
+  const createNotebook = async () => {
+    try {
+      const res = await axios.post("/api/notebook", {
+        topic: topic,
+        userId: user.id,
+      });
+      console.log(res.data);
+    } catch (error) {
+      console.log(error);
+    }
+    setTopic("");
+    getNotebooks();
+  };
 
-  function Notebook() {
-    return (
-      <Card className="h-[10rem] w-[20rem]">
-        <CardHeader>
-          <CardTitle>What is DSA?</CardTitle>
-        </CardHeader>
-        <CardContent className="">
-          <div className="flex justify-between items-center">
-            <div>
-              <div className="text-sm">Created on</div>
-              <div className="text-sm">12th July 2021</div>
-            </div>
-            <Button>View {"->"}</Button>
-          </div>
-          <div className="my-2">
-            <Badge variant="outline">Badge</Badge>
-            <Badge variant="outline">Badge</Badge>
-            <Badge variant="outline">Badge</Badge>
-          </div>
-        </CardContent>
-      </Card>
-    );
+  const getNotebooks = async () => {
+    try {
+      const res = await axios.get("/api/notebook", { userId: user.id });
+      setNotebooks(res.data.notebooks);
+      console.log(res.data.notebooks);
+
+    } catch (error) {
+      console.log(error);
+    }
   }
+
+  useEffect(() => {
+    getNotebooks();
+  }, []);
+
   return (
     <div className="flex flex-col h-screen w-full bg-background overflow-hidden">
       {/* Header  */}
@@ -85,13 +103,15 @@ const Dashboard = ({ user }) => {
                       className="w-full"
                       type="text"
                       placeholder="Enter Notebook topic.."
+                      value={topic}
+                      onChange={(e) => setTopic(e.target.value)}
                     />
                   </div>
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
-                <AlertDialogCancel>Revert</AlertDialogCancel>
-                <AlertDialogAction>Save</AlertDialogAction>
+                <AlertDialogCancel onClick={() => { setTopic("") }}>Revert</AlertDialogCancel>
+                <AlertDialogAction onClick={createNotebook}>Save</AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
@@ -106,11 +126,29 @@ const Dashboard = ({ user }) => {
 
       {/* Notebooks */}
       <div className="h-full grid grid-cols-1 md:grid-cols-4 gap-5 py-10 px-12 overflow-scroll no-scrollbar">
-        {Array(16)
-          .fill(0)
-          .map((_, i) => (
-            <Notebook key={i} />
-          ))}
+        {
+          notebooks.map((notebook, index) => (
+            <Card key={notebook._id} className="h-[10rem] w-[20rem]">
+              <CardHeader>
+                <CardTitle>{notebook.topic}</CardTitle>
+              </CardHeader>
+              <CardContent className="">
+                <div className="flex justify-between items-center">
+                  <div>
+                    <div className="text-sm">Created on</div>
+                    <div className="text-sm">{timeAgo.format(notebook.createdAt)}</div>
+                  </div>
+                  <Link href={`/notebook/${notebook._id}`}><Button >View {"->"}</Button></Link>
+                </div>
+                <div className="my-2">
+                  <Badge variant="outline">Badge</Badge>
+                  <Badge variant="outline">Badge</Badge>
+                  <Badge variant="outline">Badge</Badge>
+                </div>
+              </CardContent>
+            </Card>
+          ))
+        }
       </div>
     </div>
   );

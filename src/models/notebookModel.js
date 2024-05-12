@@ -5,8 +5,9 @@ const Schema = new mongoose.Schema({
     type: "String",
     required: [true, "Please provide notebook name"],
   },
+  createdAt: { type: Date, default: Date.now() },
   user: { type: mongoose.Schema.Types.ObjectId, ref: "users" },
-});
+}, { timestamps: true });
 
 const Notebook =
   mongoose.models.notebooks || mongoose.model("notebooks", Schema);

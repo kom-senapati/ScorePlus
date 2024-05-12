@@ -19,6 +19,7 @@ export async function POST(req) {
     const notebook = new Notebook({
       topic,
       user: user._id,
+      createdAt: new Date(),
     });
 
     let savedNotebook = await notebook.save();

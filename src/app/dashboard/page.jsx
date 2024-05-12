@@ -7,7 +7,7 @@ const page = () => {
     const cookieStore = cookies();
     const token = cookieStore.get("token");
     const user = jwtDecode(token.value);
-    console.log(user)
+    // console.log(user)
     return user;
   };
 
