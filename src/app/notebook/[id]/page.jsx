@@ -1,5 +1,5 @@
 "use client";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { marked } from "marked"; // This is the usual syntax for importing a default export
@@ -11,12 +11,17 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { IoCopyOutline } from "react-icons/io5";
 import { useToast } from "@/components/ui/use-toast";
 import Link from "next/link";
+import axios from "axios";
 
 export default function page({ params }) {
+
+  const { id } = params;
+
   const [message, setMessage] = useState("");
   const [ContentData, setContentData] = useState("");
   const [reqSend, setReqSend] = useState(false);
   const { toast } = useToast()
+  const [chats, setChats] = useState([]);
 
   const contentRef = useRef(null);
 
@@ -37,6 +42,7 @@ export default function page({ params }) {
     setContentData(marked(text));
     console.log(response);
     setReqSend(false);
+    saveChat({ query: message, response: marked(text) });
   }
   // TO render markdown content
   const MarkdownRenderer = React.forwardRef(({ content }, ref) => {
@@ -56,6 +62,40 @@ export default function page({ params }) {
     }
   };
 
+
+  const saveChat = async ({ query, response }) => {
+    console.log(query, response, id);
+    try {
+      const res = await axios.post("/api/chat", {
+        query: query,
+        response: response,
+        notebookId: id,
+      });
+      console.log(res.data);
+    } catch (error) {
+      console.log(error);
+    }
+
+    getChats();
+  }
+
+  // get Chat
+
+  const getChats = async () => {
+    try {
+      const res = await axios.get("/api/chat", { notebookId: id });
+      setChats(res.data.chats);
+      console.log(res.data.chats);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+
+  useEffect(() => {
+    getChats();
+  }, [])
+
   return (
     <div>
       <div className="flex flex-col min-h-screen w-full">
@@ -73,50 +113,49 @@ export default function page({ params }) {
             <TabsContent value="content" className="w-full">
               <div className="border-2 border-accent rounded-xl">
                 <div className="h-[65vh] md:min-w-[91vw] m-3 overflow-y-scroll no-scrollbar">
-                  {ContentData && message ? (
-                    <>
-                      <div id="user-message" className="my-3">
-                        <div className="flex justify-end gap-3 w-full">
-                          <div className="bg-primary p-5 rounded-lg w-fit">
-                            <p>{message}</p>
+
+                  {/* Chat messages */}
+
+                  {
+                    chats?.map((chat, index) => {
+                      return (
+                        <>
+                          <div id="user-message" className="my-3">
+                            <div className="flex justify-end gap-3 w-full">
+                              <div className="bg-primary p-5 rounded-lg w-fit">
+                                <p>{chat.query}</p>
+                              </div>
+                              <Avatar className="sticky top-5 left-0 z-10">
+                                <AvatarImage src="" />
+                                <AvatarFallback>User</AvatarFallback>
+                              </Avatar>
+                            </div>
                           </div>
-                          <Avatar className="sticky top-3 left-0 z-10">
-                            {/* <AvatarImage src="" /> */}
-                            <AvatarFallback>User</AvatarFallback>
-                          </Avatar>
-                        </div>
-                      </div>
 
-                      <div id="ai-res" className="flex gap-3 w-full">
-                        <Avatar className="sticky top-3 left-0 z-10">
-                          {/* <AvatarImage src="https://github.com/shadcn.png" /> */}
-                          <AvatarFallback>AI</AvatarFallback>
-                        </Avatar>
-                        <div className="bg-gray-950 p-5 rounded-lg w-fit">
-                          <Button
-                            onClick={() => {
-                              copyHandler();
-                              toast({
-                                title: "Copied Successfully✅",
-                              });
-                            }}
-                            className="float-end rounded-full h-12 hover:bg-gray-800"
-                          >
-                            <IoCopyOutline size="1.2em" />
-                          </Button>
-                          <MarkdownRenderer ref={contentRef} content={ContentData} />
-                        </div>
-                      </div>
-                    </>
-
-                  ) : (
-                    <div
-
-                      className="text-center text-white min-w-full"
-                    >
-                      Ask Anything...
-                    </div>
-                  )}
+                          <div id="ai-res" className="flex gap-3 w-full">
+                            <Avatar className="sticky top-5 left-0 z-10">
+                              <AvatarImage src="https://github.com/shadcn.png" />
+                              <AvatarFallback>AI</AvatarFallback>
+                            </Avatar>
+                            <div className="bg-gray-950 p-5 flex gap-3 items-start flex-row-reverse rounded-lg w-fit">
+                              <div
+                                onClick={() => {
+                                  copyHandler();
+                                  toast({
+                                    title: "Copied Successfully✅",
+                                  });
+                                }}
+                                className="cursor-pointer hover-bg-primary h-12"
+                              >
+                                <IoCopyOutline size={20} />
+                              </div>
+                              <MarkdownRenderer ref={contentRef} content={chat.response} />
+                            </div>
+                          </div>
+                        </>
+                      )
+                    })
+                  }
                 </div>
 
                 <form
@@ -164,6 +203,6 @@ export default function page({ params }) {
           </Tabs>
         </div>
       </div>
-    </div>
+    </div >
   );
 }
