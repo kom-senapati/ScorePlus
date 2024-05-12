@@ -31,7 +31,7 @@ function Quiz(message) {
   async function getQuestions() {
     const model = genAI.getGenerativeModel({ model: "gemini-pro" });
 
-    const prompt = `Generate JSON data for ${message.message} quiz of 10 questions withot '''json mark in it`;
+    const prompt = `Generate JSON data for ${message.message} quiz of 10 questions without '''json mark in it and with options in array nad answers in string`;
 
     const result = await model.generateContent(prompt);
     const response = await result.response;
