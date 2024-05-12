@@ -22,7 +22,6 @@ import { LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { format } from 'timeago.js'
-import { toast } from "./ui/use-toast";
 
 const Dashboard = ({ user }) => {
 
@@ -36,16 +35,8 @@ const Dashboard = ({ user }) => {
     try {
       await axios.get("/api/users/logout");
       router.push("/sign-in");
-      toast({
-        title: "Logout Successfully✅",
-      });
     } catch (error) {
       console.log(error.message);
-      toast({
-        title: "Logout failed❌",
-        description: error.response.data.message,
-        status: "error",
-      });
     }
   };
 
@@ -84,7 +75,7 @@ const Dashboard = ({ user }) => {
       <div className="flex justify-between items-center mb-5 rounded px-12 py-5 bg-secondary text-secondary-foreground">
         <h1 className="text-3xl">Hi, {user?.username}! 👋</h1>
 
-        <p className="font-extrabold text-3xl">
+        <p className="font-bold text-3xl">
           Score<span className="text-yellow-400 text-4xl">+</span>
         </p>
 
@@ -129,22 +120,29 @@ const Dashboard = ({ user }) => {
       {/* Notebooks */}
       <div className="h-full grid grid-cols-1 md:grid-cols-4 gap-5 py-10 px-12 overflow-scroll no-scrollbar">
         {
-          notebooks.map((notebook, index) => (
-            <Card key={notebook._id} className="h-[10rem] w-[20rem]">
-              <CardHeader>
-                <CardTitle>{notebook.topic}</CardTitle>
-              </CardHeader>
-              <CardContent className="">
-                <div className="flex justify-between items-center">
-                  <div>
-                    <div className="text-sm">Created on</div>
-                    <div className="text-sm">{format(notebook.createdAt)}</div>
+          notebooks.length > 0 ? (
+            notebooks.map((notebook, index) => (
+              <Card key={notebook._id} className="h-[10rem] w-[20rem]">
+                <CardHeader>
+                  <CardTitle>{notebook.topic}</CardTitle>
+                </CardHeader>
+                <CardContent className="">
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <div className="text-sm">Created on</div>
+                      <div className="text-sm">{format(notebook.createdAt)}</div>
+                    </div>
+                    <Link href={`/notebook/${notebook._id}`}><Button >View {"->"}</Button></Link>
                   </div>
-                  <Link href={`/notebook/${notebook._id}`}><Button >View {"->"}</Button></Link>
-                </div>
-              </CardContent>
-            </Card>
-          ))
+                </CardContent>
+              </Card>
+            ))
+          ) : (
+
+            <div className="flex justify-center items-center h-full w-[100vw]">
+              <h1>No notebooks created yet!</h1>
+            </div>
+          )
         }
       </div>
     </div>
