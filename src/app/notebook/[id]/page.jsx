@@ -6,10 +6,11 @@ import { marked } from "marked"; // This is the usual syntax for importing a def
 import { Comment } from "react-loader-spinner";
 import { Button } from "@/components/ui/button";
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import Quiz from "@/components/ui/quiz";
+import Quiz from "@/components/quiz";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { IoCopyOutline } from "react-icons/io5";
 import { useToast } from "@/components/ui/use-toast";
+import Link from "next/link";
 
 export default function page({ params }) {
   const [message, setMessage] = useState("");
@@ -31,12 +32,11 @@ export default function page({ params }) {
     const prompt = message;
 
     const result = await model.generateContent(prompt);
-    const response = await result.response;
+    const response = result.response;
     const text = response.text();
     setContentData(marked(text));
     console.log(response);
     setReqSend(false);
-    setMessage("");
   }
   // TO render markdown content
   const MarkdownRenderer = React.forwardRef(({ content }, ref) => {
@@ -59,6 +59,9 @@ export default function page({ params }) {
   return (
     <div>
       <div className="flex flex-col min-h-screen w-full">
+        <Link href="/dashboard">
+          <Button className="float-left m-5">Back</Button>
+        </Link>
         <div className="flex">
           <Tabs defaultValue="content" className="pt-5 px-10">
             <TabsList>
@@ -77,7 +80,7 @@ export default function page({ params }) {
                           <div className="bg-primary p-5 rounded-lg w-fit">
                             <p>{message}</p>
                           </div>
-                          <Avatar className="text-black sticky top-3 left-0 z-10">
+                          <Avatar className="sticky top-3 left-0 z-10">
                             {/* <AvatarImage src="" /> */}
                             <AvatarFallback>User</AvatarFallback>
                           </Avatar>
@@ -85,7 +88,7 @@ export default function page({ params }) {
                       </div>
 
                       <div id="ai-res" className="flex gap-3 w-full">
-                        <Avatar className="text-black sticky top-3 left-0 z-10">
+                        <Avatar className="sticky top-3 left-0 z-10">
                           {/* <AvatarImage src="https://github.com/shadcn.png" /> */}
                           <AvatarFallback>AI</AvatarFallback>
                         </Avatar>

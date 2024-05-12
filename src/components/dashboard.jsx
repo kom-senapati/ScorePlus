@@ -136,7 +136,7 @@ const Dashboard = ({ user }) => {
                 <div className="flex justify-between items-center">
                   <div>
                     <div className="text-sm">Created on</div>
-                    <div className="text-sm">{timeAgo.format(notebook.createdAt)}</div>
+                    {/* <div className="text-sm">{timeAgo.format(notebook.createdAt)}</div> */}
                   </div>
                   <Link href={`/notebook/${notebook._id}`}><Button >View {"->"}</Button></Link>
                 </div>
