@@ -21,14 +21,7 @@ import axios from "axios";
 import { LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import TimeAgo from 'javascript-time-ago'
-// English.
-import en from 'javascript-time-ago/locale/en'
-
-TimeAgo.addDefaultLocale(en)
-
-// Create formatter (English).
-const timeAgo = new TimeAgo('en-US')
+import { format } from 'timeago.js'
 
 const Dashboard = ({ user }) => {
 
@@ -136,7 +129,7 @@ const Dashboard = ({ user }) => {
                 <div className="flex justify-between items-center">
                   <div>
                     <div className="text-sm">Created on</div>
-                    {/* <div className="text-sm">{timeAgo.format(notebook.createdAt)}</div> */}
+                    <div className="text-sm">{format(notebook.createdAt)}</div>
                   </div>
                   <Link href={`/notebook/${notebook._id}`}><Button >View {"->"}</Button></Link>
                 </div>
